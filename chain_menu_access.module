@@ -1,27 +1,46 @@
 <?php
 // $Id$
 
-function chain_menu_access_chain(&$item, $new_access_callback, $new_access_arguments) {
-  // This works 99.5% of cases. Default tabs probably break but no one goes to 
+function chain_menu_access(array &$item, $new_access_callback, array $new_access_arguments, $or = FALSE, $pass_index = FALSE) {
+  // This works 99.5% of cases. Default tabs probably break but no one goes to
   // those paths anyways.
   $item += array('access callback' => 'user_access', 'access_arguments' => array());
-  array_unshift($item['access arguments'], $new_access_callback, $new_access_arguments, $item['access callback']);
-  $item['access callback'] = 'chain_menu_access_callback';
+  $count = count($new_access_arguments);
+  $item['access arguments'] = array_merge(
+    array(array($item['access callback'], $new_access_callback, $count, $or, $pass_index)),
+    $new_access_arguments,
+    $item['access arguments']
+  );
+  $item['access callback'] = '_chain_menu_access_callback';
 }
 
-function chain_menu_access_callback() {
+function _chain_menu_access_callback() {
   $args = func_get_args();
-  $access_callback = array_shift($args);
-  $access_arguments = array_shift($args);
-  $old_access_callback = array_shift($args);
-  if (!call_user_func_array($access_callback, $access_arguments)) {
-    return FALSE;
+  list($old_access_callback, $access_callback, $count, $or, $pass_index) = array_shift($args);
+  $access_arguments = array_splice($args, 0, $count, array());
+  if ($pass_index !== FALSE || $old_access_callback == 'user_access') {
+    $old_result = (bool) _chain_menu_access_callback_call($old_access_callback, $args);
+    if ($pass_index !== FALSE) {
+      $access_arguments[$pass_index] = $old_result;
+    }
   }
-  if (is_numeric($old_access_callback)) {
-    return (bool) $old_access_callback;
+  if (isset($old_result) && $or == $old_result) {
+    return $or;
   }
-  if (function_exists($old_access_callback)) {
-    return call_user_func_array($old_access_callback, $args);
+  if ($or == _chain_menu_access_callback_call($access_callback, $access_arguments)) {
+    return $or;
   }
+  if (!isset($old_result)) {
+    $old_result = _chain_menu_access_callback_call($old_access_callback, $args);
+  }
+  return $old_result;
 }
 
+function _chain_menu_access_callback_call($access_callback, $access_arguments) {
+  if (is_numeric($access_callback)) {
+    return (bool) $access_callback;
+  }
+  if (function_exists($access_callback)) {
+    return call_user_func_array($access_callback, $access_arguments);
+  }
+}
