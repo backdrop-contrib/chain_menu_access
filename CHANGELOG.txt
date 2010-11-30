@@ -4,5 +4,6 @@ CHANGELOG for Chain Menu Access API for Drupal 7
 
 
 chain_menu_access 7.x-1.x-dev:
+  - Commented, fixed, and prepared for distribution by salvis.
   - Generalized and expanded version written by chx during a chat session with salvis.
   - An API module to help client modules chain their access callbacks into other modules' menu items. Initial version written by chx in 3.5 minutes.
