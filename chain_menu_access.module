@@ -24,22 +24,22 @@
  * @param $new_access_arguments
  *   An array holding the arguments to be passed to the new access callback,
  *   as documented for the 'access arguments' key in hook_menu().
- * @param $or
- *   Pass TRUE to evaluate ($new_access_callback() || $old_access_callback()),
- *   or FALSE to evaluate ($new_access_callback() && $old_access_callback())
- *  (default).
- * @param $pass_index
- *   Specify this parameter to evaluate $old_access_callback() first and pass
+ * @param $or_or_pass_index
+ *   Pass FALSE to evaluate ($new_access_callback() && $old_access_callback()).
+ *   Pass TRUE to evaluate ($new_access_callback() || $old_access_callback()).
+ *   Pass a number to evaluate $old_access_callback() first and then pass
  *   the result as the $pass_index-th argument in $new_access_arguments to
  *   $new_access_callback().
  */
-function chain_menu_access_chain(array &$item, $new_access_callback, array $new_access_arguments = array(), $or = FALSE, $pass_index = FALSE) {
+function chain_menu_access_chain(array &$item, $new_access_callback, array $new_access_arguments = array(), $or_or_pass_index = FALSE) {
   // This works 99.5% of cases. Default tabs probably break but no one goes to
-  // those paths anyways.
+  // those paths anyways (chx).
   // Normalize the menu router item.
   $item += array('access callback' => 'user_access', 'access_arguments' => array());
   // Prepend a parameter array plus the $new_access_arguments to the existing
   // access arguments array. This works repeatedly, too.
+  $or = ($or_or_pass_index === TRUE);
+  $pass_index = ($or_or_pass_index === TRUE ? FALSE : $or_or_pass_index);
   $item['access arguments'] = array_merge(
     array(array($item['access callback'], $new_access_callback, count($new_access_arguments), $or, $pass_index)),
     $new_access_arguments,
@@ -71,7 +71,7 @@ function _chain_menu_access_callback() {
     }
   }
   $new_result = _chain_menu_access_callback_call($new_access_callback, $new_access_arguments);
-  // Do normal shortcut evaluation on the first operand (or simply return the 
+  // Do normal shortcut evaluation on the first operand (or simply return the
   // result if we have a $pass_index).
   if ($pass_index !== FALSE || $or == $new_result) {
     return $new_result;
