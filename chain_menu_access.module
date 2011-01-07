@@ -35,7 +35,7 @@ function chain_menu_access_chain(array &$item, $new_access_callback, array $new_
   // This works 99.5% of cases. Default tabs probably break but no one goes to
   // those paths anyways (chx).
   // Normalize the menu router item.
-  $item += array('access callback' => 'user_access', 'access_arguments' => array());
+  $item += array('access callback' => 'user_access', 'access arguments' => array());
   // Prepend a parameter array plus the $new_access_arguments to the existing
   // access arguments array. This works repeatedly, too.
   $or = ($or_or_pass_index === TRUE);
