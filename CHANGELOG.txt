@@ -4,6 +4,7 @@ CHANGELOG for Chain Menu Access API for Drupal 7
 
 
 chain_menu_access 7.x-1.x-dev:
+  - #1036478. Avoid a bogus PHP 5.3.3 warning.
   - Fixed default 'access arguments' typo.
 
 

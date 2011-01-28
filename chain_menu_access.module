@@ -56,7 +56,7 @@ function _chain_menu_access_callback() {
   $args = func_get_args();
   // Recover the parameters from the array, plus the $new_access_arguments.
   list($old_access_callback, $new_access_callback, $count, $or, $pass_index) = array_shift($args);
-  $new_access_arguments = array_splice($args, 0, $count, array());
+  $new_access_arguments = array_splice($args, 0, (int) $count, array());
   if ($pass_index !== FALSE || $old_access_callback == 'user_access' || is_numeric($old_access_callback)) {
     // Call the $old_access_callback first either if we need to pass its result
     // to the $new_access_callback or if it's a user_access() call or constant
