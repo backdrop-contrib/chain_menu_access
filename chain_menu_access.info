@@ -1,4 +1,3 @@
-; $Id$
 name = Chain Menu Access API
 description = Helps client modules to chain their access callbacks into other modules' menu items.
 package = Other
