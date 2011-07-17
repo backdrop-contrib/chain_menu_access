@@ -50,7 +50,7 @@ function chain_menu_access_chain(array &$item, $new_access_callback, array $new_
     // Default callback.
     $item['access callback'] = 'user_access';
   }
-  if (!isset($item['access callback']) || empty($item['page callback'])) {
+  if (!isset($item['access callback'])) {
     $item['access callback'] = 0;
   }
   if (is_bool($item['access callback'])) {
