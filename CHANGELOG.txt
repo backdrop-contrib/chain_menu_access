@@ -5,9 +5,11 @@ CHANGELOG for Chain Menu Access API for Drupal 7
 chain_menu_access 7.x-1.x-dev:
 
 
+chain_menu_access 7.x-1.0 (2011-08-09):
+
+
 chain_menu_access 7.x-1.0-beta4 (2011-07-17):
   - #1186208 by mrfelton, chx: Fix callback inheritance by removing the empty(['page callback']).
-
 
 chain_menu_access 7.x-1.0-beta3 (2011-07-05):
   - #1186208 by chx, salvis, mrfelton: Improve the stability and throw an exception for MENU_DEFAULT_LOCAL_TASKs.
