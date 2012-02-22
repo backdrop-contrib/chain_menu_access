@@ -7,10 +7,7 @@
  */
 
 /**
- * @class Exception class used to throw error for default tabs.
- *
- * MENU_DEFAULT_LOCAL_TASKs should never define their own access but instead
- * inherit it from their parent item.
+ * @class Exception class used to throw error.
  */
 class ChainMenuAccessChainException extends Exception {}
 
@@ -22,6 +19,14 @@ class ChainMenuAccessChainException extends Exception {}
  *
  * NOTE: hook_menu_alter() is called only when the menu router table is
  * rebuilt after the cache was flushed.
+ *
+ * NOTE: MENU_DEFAULT_LOCAL_TASK items should not specify access parameters
+ * but inherit them from their parent item, because access should not be
+ * different between the two. If a module does this anyway, we run into
+ * problems. To be on the safe side, you can call chain_menu_access_chain()
+ * on the MENU_DEFAULT_LOCAL_TASK item as well: this will NOT chain the item's
+ * access but instead remove its access properties, so that sane behavior
+ * (i.e. inheriting from the parent) is restored.
  *
  * @param $item
  *   The menu router item to modify.
@@ -39,10 +44,17 @@ class ChainMenuAccessChainException extends Exception {}
  *   Pass a number to evaluate $old_access_callback() first and then pass
  *   the result as the $pass_index-th argument in $new_access_arguments to
  *   $new_access_callback().
+ *
+ * @return
+ *   TRUE if the chaining succeeded, FALSE if a MENU_DEFAULT_LOCAL_TASK item
+ *   was passed (see the note above). Be sure to chain the parent item in the
+ *   latter case.
  */
 function chain_menu_access_chain(array &$item, $new_access_callback, array $new_access_arguments = array(), $or_or_pass_index = FALSE) {
   if (isset($item['type']) && $item['type'] == MENU_DEFAULT_LOCAL_TASK) {
-    throw new ChainMenuAccessChainException('Defining access callbacks on MENU_DEFAULT_LOCAL_TASK is not supported.');
+    // Inherit the parent's access! See http://drupal.org/node/1186208.
+    unset($item['access callback'], $item['access arguments']);
+    return FALSE;
   }
 
   // Normalize the menu router item.
@@ -71,6 +83,7 @@ function chain_menu_access_chain(array &$item, $new_access_callback, array $new_
     $old_access_arguments
   );
   $item['access callback'] = '_chain_menu_access_callback';
+  return TRUE;
 }
 
 /*
@@ -80,7 +93,12 @@ function chain_menu_access_chain(array &$item, $new_access_callback, array $new_
 function _chain_menu_access_callback() {
   $args = func_get_args();
   // Recover the parameters from the array, plus the $new_access_arguments.
-  list($old_access_callback, $new_access_callback, $count, $or, $pass_index) = array_shift($args);
+  $parms = array_shift($args);
+  if (count($parms) != 5) {
+    // Something's wrong (see chain_menu_access_chain() above).
+    throw new ChainMenuAccessChainException('Unexpected arguments; client module probably missed calling chain_menu_access_chain() on MENU_DEFAULT_LOCAL_TASK.');
+  }
+  list($old_access_callback, $new_access_callback, $count, $or, $pass_index) = $parms;
   $new_access_arguments = array_splice($args, 0, (int) $count, array());
   if ($pass_index !== FALSE || $old_access_callback == 'user_access' || is_numeric($old_access_callback)) {
     // Call the $old_access_callback first either if we need to pass its result

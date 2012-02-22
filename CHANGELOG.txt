@@ -3,6 +3,7 @@ CHANGELOG for Chain Menu Access API for Drupal 7
 
 
 chain_menu_access 7.x-1.x-dev:
+  - #1186208 by salvis, yched: Help ensure that MENU_DEFAULT_LOCAL_TASK items properly inherit access from their parent.
 
 
 chain_menu_access 7.x-1.0 (2011-08-09):
