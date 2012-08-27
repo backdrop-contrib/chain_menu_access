@@ -18,8 +18,8 @@ class CmaWebTestCase extends DrupalWebTestCase {
   }
 
   function setUp() {
-    parent::setUp('chain_menu_access', 'chain_menu_access_test', 'devel');
-    $this->web_user = $this->drupalCreateUser(array('create page content', 'access devel information'));
+    parent::setUp('chain_menu_access', 'chain_menu_access_test');            //, 'devel');
+    $this->web_user = $this->drupalCreateUser(array('create page content')); //, 'access devel information'));
     $this->drupalLogin($this->web_user);
   }
 
