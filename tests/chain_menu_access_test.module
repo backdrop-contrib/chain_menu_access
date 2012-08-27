@@ -11,7 +11,7 @@
  */
 function chain_menu_access_test_menu_alter(&$menu) {
   // Allow everyone access to admin/people/create (#1079032).
-  chain_menu_access_chain($menu['admin/people/create'], 'chain_menu_access_test_enabled', array('admin/people/create'), TRUE);
+  chain_menu_access_chain($menu, 'admin/people/create', 'chain_menu_access_test_enabled', array('admin/people/create'), TRUE);
 }
 
 /**

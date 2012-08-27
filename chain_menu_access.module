@@ -18,43 +18,51 @@ class ChainMenuAccessChainException extends Exception {}
  * implementation to install its access callback.
  *
  * NOTE: hook_menu_alter() is called only when the menu router table is
- * rebuilt after the cache was flushed.
+ * rebuilt after the menu cache was flushed.
  *
  * NOTE: MENU_DEFAULT_LOCAL_TASK items should not specify access parameters
  * but inherit them from their parent item, because access should not be
- * different between the two. If a module does this anyway, we run into
- * problems. To be on the safe side, you can call chain_menu_access_chain()
- * on the MENU_DEFAULT_LOCAL_TASK item as well: this will NOT chain the item's
- * access but instead remove its access properties, so that sane behavior
- * (i.e. inheriting from the parent) is restored.
+ * different between the two. If a client module tries to chain to such an item,
+ * the item's access parameters are cleared only.
  *
- * @param $item
- *   The menu router item to modify.
+ * @param array $items
+ *   The menu router items array.
  *   Do not try to chain MENU_DEFAULT_LOCAL_TASK items -- chain their parent
  *   items instead.
- * @param $new_access_callback
+ * @param string $path
+ *   The index into $items to the item to modify.
+ * @param string $new_access_callback
  *   The name of the client's access callback function, as documented for
  *   the 'access callback' key in hook_menu().
- * @param $new_access_arguments
+ * @param array $new_access_arguments
  *   An array holding the arguments to be passed to the new access callback,
  *   as documented for the 'access arguments' key in hook_menu().
- * @param $or_or_pass_index
+ * @param bool $or_or_pass_index
  *   Pass FALSE to evaluate ($new_access_callback() && $old_access_callback()).
  *   Pass TRUE to evaluate ($new_access_callback() || $old_access_callback()).
  *   Pass a number to evaluate $old_access_callback() first and then pass
  *   the result as the $pass_index-th argument in $new_access_arguments to
  *   $new_access_callback().
  *
- * @return
- *   TRUE if the chaining succeeded, FALSE if a MENU_DEFAULT_LOCAL_TASK item
- *   was passed (see the note above). Be sure to chain the parent item in the
- *   latter case.
+ * @return bool
+ *   TRUE if the chaining succeeded, FALSE if a MENU_DEFAULT_LOCAL_TASK item.
  */
-function chain_menu_access_chain(array &$item, $new_access_callback, array $new_access_arguments = array(), $or_or_pass_index = FALSE) {
+function chain_menu_access_chain(array &$items, $path, $new_access_callback, array $new_access_arguments = array(), $or_or_pass_index = FALSE) {
+  $item =& $items[$path];
   if (isset($item['type']) && $item['type'] == MENU_DEFAULT_LOCAL_TASK) {
     // Inherit the parent's access! See http://drupal.org/node/1186208.
     unset($item['access callback'], $item['access arguments']);
     return FALSE;
+  }
+
+  // Look through the child items for the MENU_DEFAULT_LOCAL_TASK.
+  $child_paths = array_filter(array_keys($items), create_function('$p', "return preg_match('#^$path/[^/]*$#', \$p);"));
+  foreach ($child_paths as $child_path) {
+    $child_item =& $items[$child_path];
+    if ($child_item['type'] == MENU_DEFAULT_LOCAL_TASK) {
+      // The default local task must inherit its access from its parent.
+      unset($child_item['access callback'], $child_item['access arguments']);
+    }
   }
 
   // Normalize the menu router item.
