@@ -59,7 +59,7 @@ function chain_menu_access_chain(array &$items, $path, $new_access_callback, arr
   $child_paths = array_filter(array_keys($items), create_function('$p', "return preg_match('#^$path/[^/]*$#', \$p);"));
   foreach ($child_paths as $child_path) {
     $child_item =& $items[$child_path];
-    if ($child_item['type'] == MENU_DEFAULT_LOCAL_TASK) {
+    if (isset($child_item['type']) && $child_item['type'] == MENU_DEFAULT_LOCAL_TASK) {
       // The default local task must inherit its access from its parent.
       unset($child_item['access callback'], $child_item['access arguments']);
     }

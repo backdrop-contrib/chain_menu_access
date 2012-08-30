@@ -3,6 +3,7 @@ CHANGELOG for Chain Menu Access API for Drupal 7
 
 
 chain_menu_access 7.x-2.x-dev:
+  - Avoid a notice (no functional change).
   - #1757616 by salvis: Handle MENU_DEFAULT_LOCAL_TASKs automatically (API change!).
 
 
