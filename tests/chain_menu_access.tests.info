@@ -1,0 +1,5 @@
+[CmaWebTestCase]
+name = Chain Menu Access API
+description = Test altering menu access via chained access functions.
+group = Chain Menu Access API
+file = chain_menu_access.test

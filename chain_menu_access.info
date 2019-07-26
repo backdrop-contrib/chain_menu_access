@@ -1,7 +1,7 @@
 name = Chain Menu Access API
-description = Helps client modules to chain their access callbacks into other modules' menu items.
-package = Other
-core = 7.x
+description = Helps client modules to chain their access callbacks into other modules menu items.
+package = Access Control
+tags[] = Access
+backdrop = 1.x
+type = module
 
-files[] = chain_menu_access.module
-files[] = tests/chain_menu_access.test

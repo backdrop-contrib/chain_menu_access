@@ -1,5 +1,6 @@
 name = "Chain Menu Access API tests"
 description = "Support module for testing the Chain Menu Access API."
 package = Testing
-core = 7.x
+backdrop = 1.x
+type = module
 hidden = TRUE

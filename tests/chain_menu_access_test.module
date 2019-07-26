@@ -18,8 +18,8 @@ function chain_menu_access_test_menu_alter(&$menu) {
  * Dynamically turn this module on and off.
  */
 function chain_menu_access_test_enabled($path) {
-  $query = drupal_get_query_parameters();
+  $query = backdrop_get_query_parameters();
   $enabled = !empty($query['enable_cma']);
-  drupal_set_message("Access to $path is " . ($enabled ? 'ENABLED' : 'DISABLED') . '.');
+  backdrop_set_message("Access to $path is " . ($enabled ? 'ENABLED' : 'DISABLED') . '.');
   return $enabled;
 }

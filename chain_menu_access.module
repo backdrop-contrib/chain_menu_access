@@ -7,9 +7,18 @@
  */
 
 /**
+ * Implements hook_autoload_info().
+ */
+function chain_menu_access_autoload_info() {
+  return array(
+    'ChainMenuAccessChainException' => 'chain_menu_access.module',
+  );
+}
+
+/**
  * @class Exception class used to throw error.
  */
-class ChainMenuAccessChainException extends Exception {}
+class ChainMenuAccessChainException extends Exception { }
 
 /**
  * Prepend the given access callback to the chain.
@@ -48,7 +57,7 @@ class ChainMenuAccessChainException extends Exception {}
  *   TRUE if the chaining succeeded, FALSE if a MENU_DEFAULT_LOCAL_TASK item.
  */
 function chain_menu_access_chain(array &$items, $path, $new_access_callback, array $new_access_arguments = array(), $or_or_pass_index = FALSE) {
-  $item =& $items[$path];
+  $item = &$items[$path];
   if (isset($item['type']) && $item['type'] == MENU_DEFAULT_LOCAL_TASK) {
     // Inherit the parent's access! See http://drupal.org/node/1186208.
     unset($item['access callback'], $item['access arguments']);
@@ -61,7 +70,7 @@ function chain_menu_access_chain(array &$items, $path, $new_access_callback, arr
   });
 
   foreach ($child_paths as $child_path) {
-    $child_item =& $items[$child_path];
+    $child_item = &$items[$child_path];
     if (isset($child_item['type']) && $child_item['type'] == MENU_DEFAULT_LOCAL_TASK) {
       // The default local task must inherit its access from its parent.
       unset($child_item['access callback'], $child_item['access arguments']);
